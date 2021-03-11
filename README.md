@@ -1,1 +1,2 @@
 # Project1_Group10
+As a stock market trader, I want an app that that will allow me to search for a business by name, and catalog current news headline mentions and stock information about that business.
