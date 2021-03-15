@@ -1,9 +1,20 @@
-// Finnhub 
-// Use symbol lookup API first, returns symbol based on input (1)
-// Get quote (2)
-// Then use company profile 2 to display company info (3)
-// use news sentiment to get news stats (4)
-// Get basic financials (5)
+// Finnhub finance API
+
+/** GUIDE! 
+ * Use stock symbol API to verify user input returns data, and that the data is correct
+ * If it is correct (IE user input matches either the first result's company description OR the symbol...
+ * Then display all of that stock's data (quote, profile, stats, financials)
+ * IF NOT then display list of suggestions or an error message asking user to search again
+ * List is generated using function closestSearchResult...looks through response to see if there are any options that match user input
+ * When user clicks on list item, it calls getStock again (or whatever super function is created to call both getStock and the news API) with the suggested result
+ * 
+ * To do: 
+ * 1. Iron out error handling for fetch 
+ * 2. Error handling when no data/limited data comes back
+ * 3. Use moment or another library to set default message for QUOTE when market is closed 
+ * 4. Look at CSS and page structure to determine how to properly write data to page
+ * 5. Consider that saved search might be a thing, functionality similar to closestSearchResult()
+**/
 
 getStock('Veru');
 
@@ -126,8 +137,6 @@ function displayStockFinance(stockFinancials,userSearch) {
 }
 
 // same stock - used to see if user search is actually in company name
-// keeping suggested search very simple - if search string is foundin company descrip, go with that item. if not, display list. 
-// could expand to create array of all searches matching search string and display that in list instead of raw data - if there's time
 function sameStock(userSearch,data) {
   // extract first search result from data, put in string variable 
   var dataCompanyName = data.result[0].description;
