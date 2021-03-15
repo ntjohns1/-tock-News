@@ -5,19 +5,20 @@
 // use news sentiment to get news stats (4)
 // Get basic financials (5)
 
-getStock('Apple');
+getStock('Veru');
 
 // input can be a symbol, name, isin or cusip
 function getStock(userSearch) {
   // api key c162mdv48v6ootkka5hg
   var token = 'c162mdv48v6ootkka5hg';
-  
-  // utilize five seperate API calls to get data for page
-  var stockSymbolURL = 'https://finnhub.io/api/v1/search?q=' + userSearch + '&token=' + token;
+  userSearch = userSearch.toUpperCase();
 
-  var priceQuoteURL = 'https://finnhub.io/docs/api/quote?symbol=' + userSearch + '&token=' + token; 
+  // utilize five seperate API calls to get data for page
+  var stockSymbol = 'https://finnhub.io/api/v1/search?q=' + userSearch + '&token=' + token;
+
+  var priceQuote = 'https://finnhub.io/api/v1/quote?symbol=' + userSearch + '&token=' + token; 
   
-  var stockProfileURL = 'https://finnhub.io/api/v1/stock/profile2?symbol=' + userSearch + '&token=' + token; 
+  var stockProfile = 'https://finnhub.io/api/v1/stock/profile2?symbol=' + userSearch + '&token=' + token; 
 
   var newsStats = 'https://finnhub.io/api/v1/stock/news-sentiment?symbol=' + userSearch + '&token=' + token;
 
@@ -26,17 +27,22 @@ function getStock(userSearch) {
   // Algorithm explained. 1st get stock symbol or a list of similar stocks for the user to choose, once choice is solid
   // 2. get price quote, stock profile, news stats, and financials - then display them to page
 
-  fetch(stockSymbolURL, {mode: 'cors'})
+  fetch(stockSymbol, {mode: 'cors'})
     .then(function (response) {
       return response.json();
     })
     .then(function (data) {
       // make sure there was a result before you do anything
       if (data.result.length > 0) {
+        console.log('Got results back from user search...');
         // if keyword is in stock name, proceed, otherwise ask user to verify from list 
         if (sameStock(userSearch,data)) {
-          // display everything else with nested fetch promise chain
-          console.log('Same!');
+          console.log('Calling display functions...');
+
+          displayStockQuote(priceQuote,userSearch);
+          displayStockProfile(stockProfile,userSearch);
+          //displayNewsStats(newsStats,userSearch);
+          displayStockFinance(stockFinancials,userSearch);
         }
         else {
           // otherwise, display list and use button to recursively call this function
@@ -47,7 +53,6 @@ function getStock(userSearch) {
       else {
         // display not found message here
       }
-      console.log(data);
     })
     .catch(function(response) {
       // display error message here
@@ -55,23 +60,69 @@ function getStock(userSearch) {
 }
 
 // display current stock price
-function displayStockQuote(data) {
-  console.log(data);
+function displayStockQuote(priceQuote,userSearch) {
+  console.log('displayStockQuote()');
+
+  fetch(priceQuote, {mode: 'cors'})
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      console.log('Got ' + userSearch + ' PRICE QUOTE data back...');
+      console.log(priceQuote);
+      console.log(data);
+      // do something with data
+    });
 }
 
 // display company profile
-function displayStockProfile(data) {
-  console.log(data);
+function displayStockProfile(stockProfile,userSearch) {
+  console.log('displayStockProfile()');
+
+  fetch(stockProfile, {mode: 'cors'})
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      console.log('Got ' + userSearch + ' STOCK PROFILE data back...');
+      console.log(stockProfile);
+      console.log(data);
+      // do something with data
+    });
 }
 
 // display company news stats
-function displayNewsStats(data) {
-  console.log(data);
+function displayNewsStats(newsStats,userSearch) {
+  console.log('displayNewsStats()');
+
+  fetch(newsStats, {mode: 'cors'})
+    .then(function (response) {
+      console.log(newsStats);
+      console.log(response);
+      return response;
+    })
+    .then(function (data) {
+      console.log('Got ' + userSearch + ' NEWS STATS data back...');
+      console.log(newsStats);
+      console.log(data);
+      // do something with data
+    });
 }
 
 // display basic company finance info
-function displayStockFinance(data) {
-  console.log(data);
+function displayStockFinance(stockFinancials,userSearch) {
+  console.log('displayStockFinance()');
+
+  fetch(stockFinancials, {mode: 'cors'})
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      console.log('Got ' + userSearch + ' STOCK FINANCIALS data back...');
+      console.log(stockFinancials);
+      console.log(data);
+      // do something with data
+    });
 }
 
 // same stock - used to see if user search is actually in company name
@@ -80,12 +131,13 @@ function displayStockFinance(data) {
 function sameStock(userSearch,data) {
   // extract first search result from data, put in string variable 
   var dataCompanyName = data.result[0].description;
+  var dataSymbol = data.result[0].displaySymbol;
   // make both strings uppercase so that we can accurately compare them (stock market doesn't care about case)
   userSearch = userSearch.toUpperCase();
   // default is they are not the same
   var same = false;
   // if the user search string is found in the company description, assume it is correct (may get fancier later)
-  if (dataCompanyName.search(userSearch) > -1) {
+  if ((dataCompanyName.search(userSearch) > -1) || (dataSymbol === userSearch)) {
     same = true;
   }
  
