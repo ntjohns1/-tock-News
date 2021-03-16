@@ -16,7 +16,7 @@
  * 5. Consider that saved search might be a thing, functionality similar to closestSearchResult()
 **/
 
-getStock('TSLA');
+getStock('Apple');
 
 // input can be a symbol, name, isin or cusip
 function getStock(userSearch) {
@@ -26,14 +26,6 @@ function getStock(userSearch) {
 
   // utilize five seperate API calls to get data for page
   var stockSymbol = 'https://finnhub.io/api/v1/search?q=' + userSearch + '&token=' + token;
-
-  var priceQuote = 'https://finnhub.io/api/v1/quote?symbol=' + userSearch + '&token=' + token; 
-  
-  var stockProfile = 'https://finnhub.io/api/v1/stock/profile2?symbol=' + userSearch + '&token=' + token; 
-
-  var newsStats = 'https://finnhub.io/api/v1/stock/news-sentiment?symbol=' + userSearch + '&token=' + token;
-
-  var stockFinancials = 'https://finnhub.io/api/v1/stock/metric?symbol=' + userSearch + '&metric=all&token=' + token;
 
   // Algorithm explained. 1st get stock symbol or a list of similar stocks for the user to choose, once choice is solid
   // 2. get price quote, stock profile, news stats, and financials - then display them to page
@@ -46,18 +38,33 @@ function getStock(userSearch) {
       // make sure there was a result before you do anything
       if (data.result.length > 0) {
         console.log('Got results back from user search...');
+        console.log(data);
         // if keyword is in stock name, proceed, otherwise ask user to verify from list 
         if (sameStock(userSearch,data)) {
+          // since the first result is correct, pull symbol from API data
+          var correctSymbol = data.result[0].displaySymbol;
+
+          // set URL's for other API calls...
+          var priceQuote = 'https://finnhub.io/api/v1/quote?symbol=' + correctSymbol + '&token=' + token; 
+  
+          var stockProfile = 'https://finnhub.io/api/v1/stock/profile2?symbol=' + correctSymbol + '&token=' + token; 
+        
+          var newsStats = 'https://finnhub.io/api/v1/stock/news-sentiment?symbol=' + correctSymbol + '&token=' + token;
+        
+          var stockFinancials = 'https://finnhub.io/api/v1/stock/metric?symbol=' + correctSymbol + '&metric=all&token=' + token;
+
+          // call functions to make additional API calls/display data
           console.log('Calling display functions...');
           $('.stock-current').children().eq(0).html(data.result[0].description);
-          displayStockQuote(priceQuote,userSearch);
-          displayStockProfile(stockProfile,userSearch);
+
+          displayStockQuote(priceQuote,correctSymbol);
+          displayStockProfile(stockProfile,correctSymbol);
           //displayNewsStats(newsStats,userSearch);
-          displayStockFinance(stockFinancials,userSearch);
+          displayStockFinance(stockFinancials,correctSymbol);
         }
         else {
           // otherwise, display list and use button to recursively call this function
-          console.log(closestSearchResult(userSearch,data));
+          closestSearchResult(userSearch,data);
         }
       }
       // if search had ZERO results...
@@ -66,7 +73,8 @@ function getStock(userSearch) {
       }
     })
     .catch(function(response) {
-      // display error message here
+      $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
+      $('.stock-current').children().eq(0).html('Finnhub API error...please try your search again!');
     });
 }
 
@@ -186,6 +194,9 @@ function closestSearchResult(userSearch,data) {
   // default result is false
   var results = [];
   // loop through all of data, see if there are similar options and push those options into an array
+  $('stock-current').children().eq(0).html('Ooops!');
+  console.log('here');
+  // write code to display items on page
 
   for(i = 0; i < data.result.length; i++) {
     var dataCompanyName = data.result[i].description;
@@ -201,12 +212,20 @@ function closestSearchResult(userSearch,data) {
     }
   }
 
-  // if search found something, send it back, if not return false
+  // if search found something, display, if not, display default message
   if (results.length > 0) {
-    // return array of objects (if any)
-    return results;
+      console.log('results are greater than 0');
+      var suggestionList = document.createElement("li");
+      for(i = 0; i < results.length; i++) {
+          suggestionList.append('<li>' + result[i].description + '</li>');
+      }
+      $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
+      $('.stock-current').children().eq(0).html('Your search returned 0 direct matches. See below.');
+      $('.news-title').children().eq(0).html('Are any of these what you were looking for?');
+      $('.news-results').html(suggestionList);
   }
   else {
-    return false;
+      $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
+      $('.stock-current').children().eq(0).html('0 results. No suggested results matched your search. Please try again.');
   }
 }
