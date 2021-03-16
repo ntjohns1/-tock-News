@@ -4,6 +4,11 @@
     box-sizing: border-box;
 }
 
+:root {
+    font-family: 'Josefin Sans', sans-serif;
+    background:oldlace;
+}
+
 header {
     display: flex;
     flex-direction: column;
@@ -21,25 +26,35 @@ main {
 }
 
 .history-sidebar {
-    height: 100vh;
+    display: flex;
+    align-content: center;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 101vh;
     width: 160px;
     position: absolute;
     z-index: 1;
     left: 0;
     background-color: rgb(89, 122, 214);
+    border-style: solid;
     overflow-x: hidden;
     padding: 20px;
 }
 
 .stock-current {
     border-style: solid;
+    padding: 20px;
 }
 
 .news {
     border-style: solid;
     height: 80vh;
+    padding: 20px;
 }
 
 .top-stocks {
     border-style: solid;
+    padding: 20px;
 }
+
+
