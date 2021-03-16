@@ -16,7 +16,7 @@
  * 5. Consider that saved search might be a thing, functionality similar to closestSearchResult()
 **/
 
-getStock('Veru');
+getStock('TSLA');
 
 // input can be a symbol, name, isin or cusip
 function getStock(userSearch) {
@@ -49,7 +49,7 @@ function getStock(userSearch) {
         // if keyword is in stock name, proceed, otherwise ask user to verify from list 
         if (sameStock(userSearch,data)) {
           console.log('Calling display functions...');
-
+          $('.stock-current').children().eq(0).html(data.result[0].description);
           displayStockQuote(priceQuote,userSearch);
           displayStockProfile(stockProfile,userSearch);
           //displayNewsStats(newsStats,userSearch);
@@ -82,7 +82,7 @@ function displayStockQuote(priceQuote,userSearch) {
       console.log('Got ' + userSearch + ' PRICE QUOTE data back...');
       console.log(priceQuote);
       console.log(data);
-      // do something with data
+      $('.stock-current').children().eq(1).html('Current price: $' + data.c + ' High: $' + data.h + ' Low: $' + data.l + ' Previous close: $' + data.pc);
     });
 }
 
@@ -98,7 +98,28 @@ function displayStockProfile(stockProfile,userSearch) {
       console.log('Got ' + userSearch + ' STOCK PROFILE data back...');
       console.log(stockProfile);
       console.log(data);
-      // do something with data
+      // display logo first, then data in a list format
+      if (data.logo) {
+        var companyLogo = document.createElement('img');
+        companyLogo.setAttribute('src',data.logo);
+        companyLogo.setAttribute('alt',data.name + ' logo');
+        $('.top-stocks').children().eq(0).append(companyLogo);
+      }
+      else {
+        $('.top-stocks').children().eq(0).append(data.name);
+      }
+
+      var profileList = document.createElement('ul');
+      var marketCap = data.marketCapitalization;
+      marketCap = marketCap.toString();
+
+      profileList.innerHTML = '<li>Country: ' + data.country + '</li>'+
+      '<li>Industry: ' + data.finnhubIndustry + '</li>' +
+      '<li>Market cap : $' + marketCap + '</li>' +
+      '<li>Shares outstanding: ' + data.shareOutstanding + '</li>' +
+      '<li>Ticker: ' + data.ticker + '</li>';
+
+      $('.top-stocks').append(profileList);
     });
 }
 
@@ -133,6 +154,13 @@ function displayStockFinance(stockFinancials,userSearch) {
       console.log(stockFinancials);
       console.log(data);
       // do something with data
+
+      var financialsList = document.createElement('ul');
+
+      financialsList.innerHTML = '<li>52 week high: ' + data.metric['52WeekHigh'] + '</li>' +
+      '<li>52 week low: ' + data.metric['52WeekLow'] + '</li>' +
+      '<li>beta: ' + data.metric.beta + '</li>';
+      $('.top-stocks').children().last().append(financialsList); 
     });
 }
 
