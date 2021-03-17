@@ -5,18 +5,9 @@
  * If it is correct (IE user input matches either the first result's company description OR the symbol...
  * Then display all of that stock's data (quote, profile, stats, financials)
  * IF NOT then display list of suggestions or an error message asking user to search again
- * List is generated using function closestSearchResult...looks through response to see if there are any options that match user input
- * When user clicks on list item, it calls getStock again (or whatever super function is created to call both getStock and the news API) with the suggested result
- * 
- * To do: 
- * 1. Iron out error handling for fetch 
- * 2. Error handling when no data/limited data comes back
- * 3. Use moment or another library to set default message for QUOTE when market is closed 
- * 4. Look at CSS and page structure to determine how to properly write data to page
- * 5. Consider that saved search might be a thing, functionality similar to closestSearchResult()
 **/
 
-getStock('Apple');
+getStock('AAPL');
 
 // input can be a symbol, name, isin or cusip
 function getStock(userSearch) {
@@ -118,13 +109,17 @@ function displayStockProfile(stockProfile,userSearch) {
       }
 
       var profileList = document.createElement('ul');
-      var marketCap = data.marketCapitalization;
-      marketCap = marketCap.toString();
+      profileList.setAttribute('style','list-style: none;');
 
+      var marketCap = formatFigures(data.marketCapitalization);
+      var suffix = 'billion';
+
+      var shares = formatFigures(data.shareOutstanding);
+      
       profileList.innerHTML = '<li>Country: ' + data.country + '</li>'+
       '<li>Industry: ' + data.finnhubIndustry + '</li>' +
-      '<li>Market cap : $' + marketCap + '</li>' +
-      '<li>Shares outstanding: ' + data.shareOutstanding + '</li>' +
+      '<li>Market cap: $' + marketCap + '</li>' +
+      '<li>Shares outstanding: ' + shares + '</li>' +
       '<li>Ticker: ' + data.ticker + '</li>';
 
       $('.top-stocks').append(profileList);
@@ -162,11 +157,21 @@ function displayStockFinance(stockFinancials,userSearch) {
       console.log(stockFinancials);
       console.log(data);
       // do something with data
-
+      
       var financialsList = document.createElement('ul');
+      financialsList.setAttribute('style','list-style: none;');
 
-      financialsList.innerHTML = '<li>52 week high: ' + data.metric['52WeekHigh'] + '</li>' +
-      '<li>52 week low: ' + data.metric['52WeekLow'] + '</li>' +
+      var adjustNumber = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 2
+      })
+
+      var weekHigh = adjustNumber.format(data.metric['52WeekHigh']);
+      var weekLow = adjustNumber.format(data.metric['52WeekLow']);
+
+      financialsList.innerHTML = '<li>52 week high: ' + weekHigh + '</li>' +
+      '<li>52 week low: ' + weekLow + '</li>' +
       '<li>beta: ' + data.metric.beta + '</li>';
       $('.top-stocks').children().last().append(financialsList); 
     });
@@ -189,43 +194,39 @@ function sameStock(userSearch,data) {
   return same;
 }
 
-// this function finds the search result that contains the user's string search (because API was returning weird results for searches, including Apple - seriously)
+// if user query not direct match, display top 10 results returned in list 
 function closestSearchResult(userSearch,data) {
-  // default result is false
-  var results = [];
-  // loop through all of data, see if there are similar options and push those options into an array
-  $('stock-current').children().eq(0).html('Ooops!');
-  console.log('here');
-  // write code to display items on page
+  // display message to user
+  $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
+  $('.stock-current').children().eq(0).html('Your search returned 0 direct matches. See below.');
+  $('.news-title').children().eq(0).html('Are any of these what you were looking for?');
+  var suggestionList = document.createElement("ul");
 
-  for(i = 0; i < data.result.length; i++) {
+  for(i = 0; i < data.result.length && i < 10; i++) {
     var dataCompanyName = data.result[i].description;
-    userSearch = userSearch.toUpperCase();
-    console.log(userSearch);
-    // if search string is in name, then add it to array
-    if (dataCompanyName.search(userSearch) > -1) {
-        var companyObject = {
-          description: data.result[i].description,
-          displaySymbol: data.result[i].displaySymbol
-        }
-        results.push(companyObject);
-    }
+    var dataCompanySymbol = data.result[i].displaySymbol;
+      
+    var listEl = document.createElement('li');
+    listEl.innerHTML = data.result[i].description;
+    suggestionList.append(listEl);
   }
 
-  // if search found something, display, if not, display default message
-  if (results.length > 0) {
-      console.log('results are greater than 0');
-      var suggestionList = document.createElement("li");
-      for(i = 0; i < results.length; i++) {
-          suggestionList.append('<li>' + result[i].description + '</li>');
-      }
-      $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
-      $('.stock-current').children().eq(0).html('Your search returned 0 direct matches. See below.');
-      $('.news-title').children().eq(0).html('Are any of these what you were looking for?');
-      $('.news-results').html(suggestionList);
-  }
-  else {
-      $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
-      $('.stock-current').children().eq(0).html('0 results. No suggested results matched your search. Please try again.');
-  }
+  // insert list into news article section
+  $('.news-results').html(suggestionList);
+}
+
+function formatFigures(number,type) {
+    if (number > 1000000) {
+        number /= 1000000;
+        number = new Intl.NumberFormat({maximumFractionDigits: 2}).format(number) + ' trillion';
+    }
+    else if (number > 1000) {
+      number /= 1000;
+      number = new Intl.NumberFormat({maximumFractionDigits: 2}).format(number) + ' billion';
+      console.log(number);
+    }
+    else {
+        number = new Intl.NumberFormat({maximumFractionDigits: 2}).format(number) + ' million';
+    }
+    return number;
 }
