@@ -15,7 +15,7 @@ defaultMessages();
 var userInput = 'AAPL';
 
 if (inputOK(userInput)) {
-  getStock(userInput,true);
+  getStock(userInput);
 }
 */
 
