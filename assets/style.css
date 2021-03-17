@@ -26,6 +26,7 @@ main {
 }
 
 .history-sidebar {
+    height: 100vh;
     display: flex;
     align-content: center;
     flex-direction: column;
@@ -54,7 +55,8 @@ main {
 
 .top-stocks {
     border-style: solid;
-    padding: 20px;
 }
 
+    padding: 20px;
+}
 
