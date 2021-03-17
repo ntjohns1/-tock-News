@@ -1,4 +1,5 @@
-// Finnhub finance API
+// Group Project 1
+// Finnhub Finance API
 
 /** GUIDE! 
  * Use stock symbol API to verify user input returns data, and that the data is correct
@@ -7,8 +8,8 @@
  * IF NOT then display list of suggestions or an error message asking user to search again
 **/
 
-var userInput = 'Apples';
-
+// use this to pass user input from form to script
+var userInput = 'APPLE';
 
 if (inputOK(userInput)) {
   getStock(userInput,true);
@@ -44,8 +45,6 @@ function getStock(userSearch) {
           var priceQuote = 'https://finnhub.io/api/v1/quote?symbol=' + correctSymbol + '&token=' + token; 
   
           var stockProfile = 'https://finnhub.io/api/v1/stock/profile2?symbol=' + correctSymbol + '&token=' + token; 
-        
-          var newsStats = 'https://finnhub.io/api/v1/stock/news-sentiment?symbol=' + correctSymbol + '&token=' + token;
         
           var stockFinancials = 'https://finnhub.io/api/v1/stock/metric?symbol=' + correctSymbol + '&metric=all&token=' + token;
 
@@ -146,24 +145,6 @@ function displayStockProfile(stockProfile,userSearch) {
       '<li>Ticker: ' + data.ticker + '</li>';
 
       $('#top-stocks-2').append(profileList);
-    });
-}
-
-// display company news stats
-function displayNewsStats(newsStats,userSearch) {
-  console.log('displayNewsStats()');
-
-  fetch(newsStats, {mode: 'cors'})
-    .then(function (response) {
-      console.log(newsStats);
-      console.log(response);
-      return response;
-    })
-    .then(function (data) {
-      console.log('Got ' + userSearch + ' NEWS STATS data back...');
-      console.log(newsStats);
-      console.log(data);
-      // do something with data
     });
 }
 
