@@ -8,20 +8,21 @@
  * IF NOT then display list of suggestions or an error message asking user to search again
 **/
 
+// display default messages in stock containers prior to search
 defaultMessages();
 
-// use this to pass user input from form to script
+/** Example code below for how to run script 
 var userInput = 'AAPL';
 
 if (inputOK(userInput)) {
   getStock(userInput,true);
 }
+*/
 
 // display default content in content containers before search
 function defaultMessages() {
   $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
   $('.stock-current').children().eq(0).html('Search for a stock above to see results!');
-
   $('.top-stocks').children().eq(0).html('Stock profile');
 }
 
@@ -64,7 +65,6 @@ function getStock(userSearch) {
 
           displayStockQuote(priceQuote,correctSymbol);
           displayStockProfile(stockProfile,correctSymbol);
-          //displayNewsStats(newsStats,userSearch);
           displayStockFinance(stockFinancials,correctSymbol);
         }
         else {
@@ -74,7 +74,8 @@ function getStock(userSearch) {
       }
       // if search had ZERO results...
       else {
-        // display not found message here
+        $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
+        $('.stock-current').children().eq(0).html('Your search returned 0 direct matches or suggested results. Please try again.');
       }
     })
     .catch(function(response) {
