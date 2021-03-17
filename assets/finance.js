@@ -7,7 +7,7 @@
  * IF NOT then display list of suggestions or an error message asking user to search again
 **/
 
-getStock('AAPL');
+getStock('TSLA');
 
 // input can be a symbol, name, isin or cusip
 function getStock(userSearch) {
@@ -81,13 +81,24 @@ function displayStockQuote(priceQuote,userSearch) {
       console.log('Got ' + userSearch + ' PRICE QUOTE data back...');
       console.log(priceQuote);
       console.log(data);
-      $('.stock-current').children().eq(1).html('Current price: $' + data.c + ' High: $' + data.h + ' Low: $' + data.l + ' Previous close: $' + data.pc);
+      $('.stock-current').children().eq(1).html('Current price: ' + formatPrice(data.c) + ' High: ' + formatPrice(data.h) + ' Low: ' + formatPrice(data.l) + ' Previous close: ' + formatPrice(data.pc));
     });
 }
 
 // display company profile
 function displayStockProfile(stockProfile,userSearch) {
   console.log('displayStockProfile()');
+
+  // create 3 divs so that content doesn't load in the wrong order
+  var div1 = document.createElement('div');
+  div1.setAttribute('id','top-stocks-1');
+  $('.top-stocks').append(div1);
+  var div2 = document.createElement('div');
+  div2.setAttribute('id','top-stocks-2');
+  $('.top-stocks').append(div2);
+  var div3 = document.createElement('div');
+  div3.setAttribute('id','top-stocks-3');
+  $('.top-stocks').append(div3);
 
   fetch(stockProfile, {mode: 'cors'})
     .then(function (response) {
@@ -102,7 +113,7 @@ function displayStockProfile(stockProfile,userSearch) {
         var companyLogo = document.createElement('img');
         companyLogo.setAttribute('src',data.logo);
         companyLogo.setAttribute('alt',data.name + ' logo');
-        $('.top-stocks').children().eq(0).append(companyLogo);
+        $('#top-stocks-1').append(companyLogo);
       }
       else {
         $('.top-stocks').children().eq(0).append(data.name);
@@ -111,10 +122,10 @@ function displayStockProfile(stockProfile,userSearch) {
       var profileList = document.createElement('ul');
       profileList.setAttribute('style','list-style: none;');
 
-      var marketCap = formatFigures(data.marketCapitalization);
+      var marketCap = formatProfile(data.marketCapitalization);
       var suffix = 'billion';
 
-      var shares = formatFigures(data.shareOutstanding);
+      var shares = formatProfile(data.shareOutstanding);
       
       profileList.innerHTML = '<li>Country: ' + data.country + '</li>'+
       '<li>Industry: ' + data.finnhubIndustry + '</li>' +
@@ -122,7 +133,7 @@ function displayStockProfile(stockProfile,userSearch) {
       '<li>Shares outstanding: ' + shares + '</li>' +
       '<li>Ticker: ' + data.ticker + '</li>';
 
-      $('.top-stocks').append(profileList);
+      $('#top-stocks-2').append(profileList);
     });
 }
 
@@ -161,19 +172,13 @@ function displayStockFinance(stockFinancials,userSearch) {
       var financialsList = document.createElement('ul');
       financialsList.setAttribute('style','list-style: none;');
 
-      var adjustNumber = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 2
-      })
-
-      var weekHigh = adjustNumber.format(data.metric['52WeekHigh']);
-      var weekLow = adjustNumber.format(data.metric['52WeekLow']);
+      var weekHigh = formatPrice(data.metric['52WeekHigh']);
+      var weekLow = formatPrice(data.metric['52WeekLow']);
 
       financialsList.innerHTML = '<li>52 week high: ' + weekHigh + '</li>' +
       '<li>52 week low: ' + weekLow + '</li>' +
       '<li>beta: ' + data.metric.beta + '</li>';
-      $('.top-stocks').children().last().append(financialsList); 
+      $('#top-stocks-3').append(financialsList); 
     });
 }
 
@@ -215,18 +220,24 @@ function closestSearchResult(userSearch,data) {
   $('.news-results').html(suggestionList);
 }
 
-function formatFigures(number,type) {
+function formatProfile(number) {
     if (number > 1000000) {
         number /= 1000000;
-        number = new Intl.NumberFormat({maximumFractionDigits: 2}).format(number) + ' trillion';
+        number = new Intl.NumberFormat('en-US', {style: 'decimal', maximumFractionDigits: 2}).format(number) + ' trillion';
     }
     else if (number > 1000) {
       number /= 1000;
-      number = new Intl.NumberFormat({maximumFractionDigits: 2}).format(number) + ' billion';
+      number = new Intl.NumberFormat('en-US', {style: 'decimal', maximumFractionDigits: 2}).format(number) + ' billion';
       console.log(number);
     }
     else {
-        number = new Intl.NumberFormat({maximumFractionDigits: 2}).format(number) + ' million';
+        number = new Intl.NumberFormat('en-US', {style: 'decimal', maximumFractionDigits: 2}).format(number) + ' million';
     }
     return number;
+}
+
+function formatPrice(number) {
+  number = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 2}).format(number);
+  console.log('formatPrice = ' + number);
+  return number;
 }
