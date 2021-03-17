@@ -8,11 +8,21 @@
  * IF NOT then display list of suggestions or an error message asking user to search again
 **/
 
+defaultMessages();
+
 // use this to pass user input from form to script
-var userInput = 'APPLE';
+var userInput = 'AAPL';
 
 if (inputOK(userInput)) {
   getStock(userInput,true);
+}
+
+// display default content in content containers before search
+function defaultMessages() {
+  $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
+  $('.stock-current').children().eq(0).html('Search for a stock above to see results!');
+
+  $('.top-stocks').children().eq(0).html('Stock profile');
 }
 
 // input can be a symbol, name, isin or cusip
