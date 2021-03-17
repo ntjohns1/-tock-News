@@ -7,7 +7,12 @@
  * IF NOT then display list of suggestions or an error message asking user to search again
 **/
 
-getStock('TSLA');
+var userInput = 'Apples';
+
+
+if (inputOK(userInput)) {
+  getStock(userInput,true);
+}
 
 // input can be a symbol, name, isin or cusip
 function getStock(userSearch) {
@@ -66,6 +71,7 @@ function getStock(userSearch) {
     .catch(function(response) {
       $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
       $('.stock-current').children().eq(0).html('Finnhub API error...please try your search again!');
+      console.log(response);
     });
 }
 
@@ -89,15 +95,21 @@ function displayStockQuote(priceQuote,userSearch) {
 function displayStockProfile(stockProfile,userSearch) {
   console.log('displayStockProfile()');
 
+  // reset all top-stocks children to blank
+  $('.top-stocks').children().html('');
+
   // create 3 divs so that content doesn't load in the wrong order
   var div1 = document.createElement('div');
   div1.setAttribute('id','top-stocks-1');
+  div1.setAttribute('style','padding: 5px;');
   $('.top-stocks').append(div1);
   var div2 = document.createElement('div');
   div2.setAttribute('id','top-stocks-2');
+  div2.setAttribute('style','padding: 5px;');
   $('.top-stocks').append(div2);
   var div3 = document.createElement('div');
   div3.setAttribute('id','top-stocks-3');
+  div3.setAttribute('style','padding: 5px;');
   $('.top-stocks').append(div3);
 
   fetch(stockProfile, {mode: 'cors'})
@@ -109,14 +121,14 @@ function displayStockProfile(stockProfile,userSearch) {
       console.log(stockProfile);
       console.log(data);
       // display logo first, then data in a list format
-      if (data.logo) {
+      if (data.logo != '') {
         var companyLogo = document.createElement('img');
         companyLogo.setAttribute('src',data.logo);
         companyLogo.setAttribute('alt',data.name + ' logo');
         $('#top-stocks-1').append(companyLogo);
       }
       else {
-        $('.top-stocks').children().eq(0).append(data.name);
+        $('.top-stocks').children().eq(0).html(data.name);
       }
 
       var profileList = document.createElement('ul');
@@ -199,27 +211,56 @@ function sameStock(userSearch,data) {
   return same;
 }
 
-// if user query not direct match, display top 10 results returned in list 
+// displays top 10 results from API (if user query has no matching result)
 function closestSearchResult(userSearch,data) {
   // display message to user
   $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
   $('.stock-current').children().eq(0).html('Your search returned 0 direct matches. See below.');
   $('.news-title').children().eq(0).html('Are any of these what you were looking for?');
   var suggestionList = document.createElement("ul");
+  var numberAcceptableLinks = 0;
 
   for(i = 0; i < data.result.length && i < 10; i++) {
     var dataCompanyName = data.result[i].description;
     var dataCompanySymbol = data.result[i].displaySymbol;
-      
-    var listEl = document.createElement('li');
-    listEl.innerHTML = data.result[i].description;
-    suggestionList.append(listEl);
+
+    // this filters out indexes and other special funds from list (requires premium access with API)
+    if (!dataCompanySymbol.includes('.') && !dataCompanySymbol.includes('^')) {
+        var listEl = document.createElement('li');
+        var linkEl = document.createElement('a');
+        linkEl.setAttribute('href','#');
+        linkEl.setAttribute('data-descr',dataCompanySymbol);
+
+        linkEl.innerHTML = data.result[i].description + ' (Symbol: ' + dataCompanySymbol + ')';
+        listEl.append(linkEl);
+        suggestionList.append(listEl);
+
+        // add event listener to link so it will run getStock function when clicked
+        listEl.addEventListener('click', function() {
+            var stockSymbol = this.children[0].getAttribute('data-descr');
+
+            // reset news results
+            $('.news-title').children().eq(0).html('Searching for ' + stockSymbol);
+            $('.news-results').html('Results will display above.');
+            
+            // search for suggested stock
+            getStock(stockSymbol);
+        });
+        numberAcceptableLinks++;
+    }
   }
 
-  // insert list into news article section
-  $('.news-results').html(suggestionList);
+  if (numberAcceptableLinks > 0) {
+      // insert list into news article section
+      $('.news-results').html(suggestionList);
+  }
+  else {
+      $('.news-results').html('No suggested results.');
+  }
+
 }
 
+// formats numbers for stock profile section (market cap, outstanding shares)
 function formatProfile(number) {
     if (number > 1000000) {
         number /= 1000000;
@@ -236,8 +277,26 @@ function formatProfile(number) {
     return number;
 }
 
+// formats stock price numbers
 function formatPrice(number) {
   number = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 2}).format(number);
   console.log('formatPrice = ' + number);
   return number;
+}
+
+// basic check on user input - make sure no symbols in name
+function inputOK(userInput) {
+  inputOK = true;
+
+  if (userInput.includes('.') || userInput.includes('^')) {
+    console.log('Bad search');
+    console.log(userInput);
+
+    $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
+    $('.stock-current').children().eq(0).html('Can only search for common stock symbols!');
+
+    inputOK = false;
+  }
+
+  return inputOK;
 }
