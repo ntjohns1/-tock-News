@@ -200,7 +200,7 @@ function displayNewsHeadlines(input) {
       console.log(data);
       for (let i = 0; i < 5; i++) {
         var articleCard = $('<div>')
-        newsCard.append(articleCard)
+        $('#news-card').append(articleCard)
         var newsTitle = $('<h2>');
         newsTitle.text(data.news[i].title);
         articleCard.append(newsTitle);
