@@ -14,7 +14,9 @@ defaultMessages();
 $('#button').on('click',function() {
     var userInput = $('#textbox').val();
     getStock(userInput);
-    // newsAPI(userInput)
+    displayNewsHeadlines(userInput)
+    $('.stock-current').children().html('');
+    $('.top-stocks').children().html('');
 });
 
 // display default content in content containers before search
@@ -188,7 +190,7 @@ function displayStockFinance(stockFinancials,userSearch) {
     });
 }
 
-/*function displayNewsHeadlines(input) {
+function displayNewsHeadlines(input) {
   var url = 'https://api.currentsapi.services/v1/search?' + 'language=en&category=finance&keywords=' + input + '&apiKey=58zqUId_bFIYNSpOfAZh4cXhhgMJ1is-b48zhSmxe60fK5F5';
   fetch(url)
     .then(function (response) {
@@ -241,8 +243,9 @@ function sameStock(userSearch,data) {
 function closestSearchResult(userSearch,data) {
   // display message to user
   $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
-  $('.stock-current').children().eq(0).html('Your search returned 0 direct matches. See below.');
-  $('.news-title').children().eq(0).html('Are any of these what you were looking for?');
+  $('.stock-current').children().eq(0).html('Your search returned 0 direct matches. Please search using stock symbol. See suggested results below.');
+  $('.top-stocks').children().eq(0).html('Are any of these what you were looking for?');
+
   var suggestionList = document.createElement("ul");
   var numberAcceptableLinks = 0;
 
@@ -253,7 +256,10 @@ function closestSearchResult(userSearch,data) {
     // this filters out indexes and other special funds from list (requires premium access with API)
     if (!dataCompanySymbol.includes('.') && !dataCompanySymbol.includes('^')) {
         var listEl = document.createElement('li');
+        listEl.setAttribute('style','list-style: none; color: white;');
+
         var linkEl = document.createElement('a');
+        linkEl.setAttribute('style','color: white; text-decoration: none');
         linkEl.setAttribute('href','#');
         linkEl.setAttribute('data-descr',dataCompanySymbol);
 
@@ -266,21 +272,23 @@ function closestSearchResult(userSearch,data) {
             var stockSymbol = this.children[0].getAttribute('data-descr');
 
             // reset news results
-            $('.news-title').children().eq(0).html('Searching for ' + stockSymbol);
-            $('.news-results').html('Results will display above.');
+            $('.top-stocks').children().html('');
+
             // search for suggested stock
             getStock(stockSymbol);
+            newsAPI(stockSymbol);
         });
+        
         numberAcceptableLinks++;
     }
   }
 
   if (numberAcceptableLinks > 0) {
       // insert list into news article section
-      $('.news-results').html(suggestionList);
+      $('.top-stocks').append(suggestionList);
   }
   else {
-      $('.news-results').html('No suggested results.');
+      $('.top-stocks').children().eq(0).html('No suggested results.');
   }
 
 }
