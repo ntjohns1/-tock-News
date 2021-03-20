@@ -9,13 +9,11 @@
 **/
 
 // display default messages in stock containers prior to search
-//defaultMessages();
+defaultMessages();
 
 $('#button').on('click',function() {
     var userInput = $('#textbox').val();
-    if (inputOK(userInput)) {
-      getStock(userInput);
-    }
+    getStock(userInput);
 });
 
 // display default content in content containers before search
