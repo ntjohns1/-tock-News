@@ -219,7 +219,6 @@ function displayNewsHeadlines(input) {
       }
     })
   };
-*/
 // same stock - used to see if user search is actually in company name
 function sameStock(userSearch,data) {
   // make both strings uppercase so that we can accurately compare them (stock market doesn't care about case)
