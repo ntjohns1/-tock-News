@@ -9,15 +9,14 @@
 **/
 
 // display default messages in stock containers prior to search
-defaultMessages();
+//defaultMessages();
 
-/** Example code below for how to run script 
-var userInput = 'AAPL';
-
-if (inputOK(userInput)) {
-  getStock(userInput);
-}
-*/
+$('#button').on('click',function() {
+    var userInput = $('#textbox').val();
+    if (inputOK(userInput)) {
+      getStock(userInput);
+    }
+});
 
 // display default content in content containers before search
 function defaultMessages() {
