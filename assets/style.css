@@ -26,12 +26,11 @@ main {
 }
 
 .history-sidebar {
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     align-content: center;
     flex-direction: column;
     justify-content: space-between;
-    height: 101vh;
     width: 160px;
     position: absolute;
     z-index: 1;
@@ -49,7 +48,6 @@ main {
 
 .news {
     border-style: solid;
-    height: 80vh;
     padding: 20px;
 }
 
@@ -57,4 +55,7 @@ main {
     border-style: solid;
 }
 
+.news-image {
+    max-width: 200px;
+}
 
