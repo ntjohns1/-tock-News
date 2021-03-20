@@ -1,33 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css" integrity="sha384-LTIDeidl25h2dPxrB2Ekgc9c7sEC3CWGM6HeFmuDNUjX76Ert4Z4IY714dhZHPLd" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css"
+        integrity="sha384-LTIDeidl25h2dPxrB2Ekgc9c7sEC3CWGM6HeFmuDNUjX76Ert4Z4IY714dhZHPLd" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/grids-responsive-min.css">
     <title>$TOCK NEWS</title>
     <link rel="stylesheet" href="./assets/style.css" />
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
-  </head>
+</head>
+
+<body>
     <header>
         <h1 class="title">$TOCK NEWS</h1>
         <div class="searchbar">
             <div class="search-container">
-              <form action="#">
-                <input id="textbox" type="text" placeholder="Search Stock..." name="search">
-                <button id="button" type="button">Enter</button>
-              </form>
+                <form action="#">
+                    <input id="textbox" type="text" placeholder="Search Stock..." name="search">
+                    <button id="button" type="button">Enter</button>
+                </form>
             </div>
         </div>
     </header>
-      <main>
+    <main>
         <content class="history-sidebar">
             <div class="history-title">
                 <h2>History</h2>
             </div>
             <div class="history-list">
-                <h3>Placeholder</h3></div>
+                <h3>Placeholder</h3>
+            </div>
             <div class="history-clear">
                 <button id="clear" type="button">Clear History</button>
             </div>
@@ -51,8 +56,12 @@
                 <div class="news-title">
                     <h1>Stock Headline Results</h1>
                 </div>
-                <div class="news-results">
-                    Headlines
+            </content>
+            <content class="pure-u-1 pure-u-md-3-4">
+                <div class="pure-u-1 pure-u-md-3-4 news">
+                    <div id="news-card" class="pure-u-1 pure-u-md-3-4 news-title">
+                        <h1>Stock Headline Results</h1>
+                    </div>
                 </div>
             </div>
         </content>
@@ -66,5 +75,4 @@
       <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="assets/finance.js"></script>
     <script src="./assets/script.js"></script>
-  </body>
-
+</body>

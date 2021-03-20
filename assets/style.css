@@ -28,6 +28,7 @@ main {
 }
 
 .history-sidebar {
+    min-height: 100vh;
     display: flex;
     align-content: center;
     flex-direction: column;
@@ -70,6 +71,10 @@ main {
     background-image: linear-gradient(to right, rgb(7, 42, 65), black);
     color: rgb(233, 233, 233);
     opacity: .9;
+}
+
+.news-image {
+    max-width: 200px;
 }
 
 .footer {
