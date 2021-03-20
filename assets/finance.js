@@ -14,6 +14,7 @@ defaultMessages();
 $('#button').on('click',function() {
   $('.stock-current').children().html('');
   $('.top-stocks').children().html('');
+
   var userInput = $('#textbox').val();
   getStock(userInput);
 });
@@ -212,7 +213,7 @@ function sameStock(userSearch,data) {
 function closestSearchResult(userSearch,data) {
   // display message to user
   $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
-  $('.stock-current').children().eq(0).html('Your search returned 0 direct matches. See below.');
+  $('.stock-current').children().eq(0).html('Your search returned 0 direct matches. Please search using stock symbol. See suggested results below.');
   $('.top-stocks').children().eq(0).html('Are any of these what you were looking for?');
 
   var suggestionList = document.createElement("ul");
@@ -245,7 +246,9 @@ function closestSearchResult(userSearch,data) {
 
             // search for suggested stock
             getStock(stockSymbol);
+            newsAPI(stockSymbol);
         });
+        
         numberAcceptableLinks++;
     }
   }
