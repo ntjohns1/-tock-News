@@ -6,7 +6,8 @@
 
 :root {
     font-family: 'Josefin Sans', sans-serif;
-    background:oldlace;
+    color: rgba(255, 255, 255, 0.863);
+    background-image: url(./images/—Pngtree—financial\ economy\ stock\ banner\ poster_1119485.jpg);
 }
 
 header {
@@ -14,9 +15,10 @@ header {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: rgb(29, 52, 97);
+    font-size: 30px;
+    /* background-color: rgb(29, 52, 97); */
     padding: 20px;
-    color: white;
+    background-image: url(./images/—Pngtree—financial\ economy\ stock\ banner\ poster_1119485.jpg);
 }
 
 main {
@@ -26,35 +28,61 @@ main {
 }
 
 .history-sidebar {
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     align-content: center;
     flex-direction: column;
     justify-content: space-between;
-    height: 101vh;
+    height: 100vh;
     width: 160px;
     position: absolute;
     z-index: 1;
     left: 0;
-    background-color: rgb(89, 122, 214);
+    background-image: linear-gradient(to bottom, rgb(7, 42, 65), black);
     border-style: solid;
     overflow-x: hidden;
     padding: 20px;
+    border-radius: 10px;
 }
 
 .stock-current {
     border-style: solid;
     padding: 20px;
+    border-radius: 10px;
+    background-image: linear-gradient(to right, rgb(7, 42, 65), black);
+    color: rgb(233, 233, 233);
+    opacity: .9;
 }
 
 .news {
     border-style: solid;
+    border-radius: 10px;
     height: 80vh;
     padding: 20px;
+    background-image: linear-gradient(to right, rgb(7, 42, 65), black);
+    color: rgb(233, 233, 233);
+    opacity: .9;
 }
 
 .top-stocks {
     border-style: solid;
+    border-radius: 10px;
+    padding: 20px;
+    background-image: linear-gradient(to right, rgb(7, 42, 65), black);
+    color: rgb(233, 233, 233);
+    opacity: .9;
 }
 
+.news-image {
+    max-width: 200px;
+}
 
+.footer {
+    display: flex;
+    justify-content: center;
+    color: rgb(255, 223, 175);
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px;
+}
