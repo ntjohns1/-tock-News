@@ -67,6 +67,7 @@ main {
 .top-stocks {
     border-style: solid;
     border-radius: 10px;
+    height: 80vh;
     padding: 20px;
     background-image: linear-gradient(to right, rgb(7, 42, 65), black);
     color: rgb(233, 233, 233);
@@ -85,4 +86,7 @@ main {
     text-align: center;
     margin-top: 20px;
     padding: 10px;
+}
+.scroll {
+   overflow:scroll; 
 }

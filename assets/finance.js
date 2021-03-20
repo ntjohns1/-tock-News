@@ -14,6 +14,7 @@ defaultMessages();
 $('#button').on('click',function() {
     var userInput = $('#textbox').val();
     getStock(userInput);
+    // newsAPI(userInput)
 });
 
 // display default content in content containers before search
@@ -187,6 +188,36 @@ function displayStockFinance(stockFinancials,userSearch) {
     });
 }
 
+/*function displayNewsHeadlines(input) {
+  var url = 'https://api.currentsapi.services/v1/search?' + 'language=en&category=finance&keywords=' + input + '&apiKey=58zqUId_bFIYNSpOfAZh4cXhhgMJ1is-b48zhSmxe60fK5F5';
+  fetch(url)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      console.log(data);
+      for (let i = 0; i < 5; i++) {
+        var articleCard = $('<div>')
+        newsCard.append(articleCard)
+        var newsTitle = $('<h2>');
+        newsTitle.text(data.news[i].title);
+        articleCard.append(newsTitle);
+        var newsAuthor = $('<h3>');
+        newsAuthor.text(data.news[i].author);
+        articleCard.append(newsAuthor);
+        if (data.news[i].image !== "None") {
+        var newsImg = $('<img>');
+        newsImg.attr('src', data.news[i].image);
+        newsImg.addClass('news-image')
+        articleCard.append(newsImg);
+        }
+        var newsContent = $('<p>');
+        newsContent.text(data.news[i].description);
+        articleCard.append(newsContent);
+      }
+    })
+  };
+*/
 // same stock - used to see if user search is actually in company name
 function sameStock(userSearch,data) {
   // make both strings uppercase so that we can accurately compare them (stock market doesn't care about case)

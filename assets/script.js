@@ -15,8 +15,8 @@ searchButton.on('click', function newsAPI() {
     .then(function (data) {
       console.log(data);
       for (let i = 0; i < 5; i++) {
-        var articleCard = $('<div>')
-        newsCard.append(articleCard)
+        var articleCard = $('<div>');
+        newsCard.append(articleCard);
         var newsTitle = $('<h2>');
         newsTitle.text(data.news[i].title);
         articleCard.append(newsTitle);
@@ -35,12 +35,3 @@ searchButton.on('click', function newsAPI() {
       }
     })
 });
-
-
-
-
-
-
-
-
-
