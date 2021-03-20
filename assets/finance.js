@@ -12,6 +12,11 @@
 defaultMessages();
 
 $('#button').on('click',function() {
+  $('.stock-current').children().eq(0).html('');
+  $('.top-stocks').children().eq(0).html('');
+  $('.news-title').children().eq(0).html('');
+  $('.news-results').html('');
+
     var userInput = $('#textbox').val();
     getStock(userInput);
 });
