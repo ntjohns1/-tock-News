@@ -25,6 +25,9 @@ function defaultMessages() {
 
 // input can be a symbol, name, isin or cusip
 function getStock(userSearch) {
+  // reset a few things
+  $('.news-title').children().eq(0).html('');
+  $('.news-results').html('');
   // api key c162mdv48v6ootkka5hg
   var token = 'c162mdv48v6ootkka5hg';
   userSearch = userSearch.toUpperCase();
@@ -44,10 +47,11 @@ function getStock(userSearch) {
       if (data.result.length > 0) {
         console.log('Got results back from user search...');
         console.log(data);
-        // if keyword is in stock name, proceed, otherwise ask user to verify from list 
-        if (sameStock(userSearch,data)) {
+        // if user search (stock symbol) matches results, then continue
+        if (sameStock(userSearch,data)[0]) {
           // since the first result is correct, pull symbol from API data
-          var correctSymbol = data.result[0].displaySymbol;
+          var stockPosition = sameStock(userSearch,data)[1];
+          var correctSymbol = data.result[stockPosition].displaySymbol;
 
           // set URL's for other API calls...
           var priceQuote = 'https://finnhub.io/api/v1/quote?symbol=' + correctSymbol + '&token=' + token; 
@@ -58,7 +62,7 @@ function getStock(userSearch) {
 
           // call functions to make additional API calls/display data
           console.log('Calling display functions...');
-          $('.stock-current').children().eq(0).html(data.result[0].description);
+          $('.stock-current').children().eq(0).html(data.result[stockPosition].description);
 
           displayStockQuote(priceQuote,correctSymbol);
           displayStockProfile(stockProfile,correctSymbol);
@@ -185,19 +189,21 @@ function displayStockFinance(stockFinancials,userSearch) {
 
 // same stock - used to see if user search is actually in company name
 function sameStock(userSearch,data) {
-  // extract first search result from data, put in string variable 
-  var dataCompanyName = data.result[0].description;
-  var dataSymbol = data.result[0].displaySymbol;
   // make both strings uppercase so that we can accurately compare them (stock market doesn't care about case)
   userSearch = userSearch.toUpperCase();
   // default is they are not the same
   var same = false;
+  var position = -1;
+
   // if the user search string is found in the company description, assume it is correct (may get fancier later)
-  if ((dataCompanyName.search(userSearch) > -1) || (dataSymbol === userSearch)) {
-    same = true;
+  for (i = 0; i < data.result.length; i++) {
+    if (data.result[i].displaySymbol === userSearch) {
+      same = true;
+      position = i;
+    }
   }
  
-  return same;
+  return [same,position];
 }
 
 // displays top 10 results from API (if user query has no matching result)
@@ -231,7 +237,6 @@ function closestSearchResult(userSearch,data) {
             // reset news results
             $('.news-title').children().eq(0).html('Searching for ' + stockSymbol);
             $('.news-results').html('Results will display above.');
-            
             // search for suggested stock
             getStock(stockSymbol);
         });
