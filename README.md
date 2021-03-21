@@ -18,7 +18,6 @@ Our web application incorporates third party APIs for the primary functions. We 
 [Sam Gates](https://github.com/sg0703) 
 [Nelson Johns](https://github.com/ntjohns1)
 [Thang Nguyen](https://github.com/thangnt336)
-[Nathan Taylor](https://github.com/nlt1034)
 
 ### Third Party Developers
 [PureCSS](https://purecss.io/)
