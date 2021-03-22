@@ -355,23 +355,23 @@ function inputOK(userInput) {
 }
 
 function addSearch(stock) {
-  // check localstorage first, if not there then create
+  // if the localstorage item is not there
   if (!localStorage.getItem("pastSearches")) {
-      // push newScore object into array, then
+      // push stock into array
       var pastSearches = [];    
    
       pastSearches.push(stock);
       // write it to local storage
       localStorage.setItem("pastSearches",JSON.stringify(pastSearches));
   }
-  // if task list already exists in localstorage, see if this specific hour is in there. if it is, modify it's current contents. if it's not, add it and then save all data back into local storage
+  // if the localstorage item is there
   else {
       // extract data from localstorage
       var pastSearches = JSON.parse(localStorage.getItem("pastSearches"));
       console.log(pastSearches);
       //only add if it's not already there
       if (!alreadySaved(stock,pastSearches)) {
-           // add new city to list
+           // add new stock to list
            pastSearches.push(stock);
            // re-insert data into local storage
            localStorage.setItem("pastSearches",JSON.stringify(pastSearches));
