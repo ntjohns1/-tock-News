@@ -9,18 +9,16 @@
 **/
 
 // local storage array
-var storageArray = new Array();
 
 // display default messages in stock containers prior to search
 defaultMessages();
-init();
 
 // if user searches...
 $('#button').on('click',function() {
     // get user input
     var userInput = $('#textbox').val();
     getStock(userInput);
-    displayNewsHeadlines(userInput + ' stock');
+    displayNewsHeadlines(userInput + 'stock')
     // reset certain content containers
     $('.stock-current').children().html('');
     $('.top-stocks').children().html('');
@@ -44,12 +42,6 @@ function defaultMessages() {
   displaySearches();
 }
 
-function init() {
-var storedSearches = JSON.parse(localStorage.getItem("storedSearch"))
-if (storedSearches !== null) {
-  storageArray = storedSearches
-}
-}
 // input can be a symbol, name, isin or cusip
 function getStock(userSearch) {
   // reset a few things
@@ -84,9 +76,6 @@ function getStock(userSearch) {
             symbol: correctSymbol
           }
 
-          storageArray.push(storageObject);
-          localStorage.setItem("storedSearch", JSON.stringify(storageArray))
-          console.log(storageArray);
           // set URL's for other API calls...
           var priceQuote = 'https://finnhub.io/api/v1/quote?symbol=' + correctSymbol + '&token=' + token; 
   
@@ -101,7 +90,6 @@ function getStock(userSearch) {
           displayStockQuote(priceQuote,correctSymbol);
           displayStockProfile(stockProfile,correctSymbol);
           displayStockFinance(stockFinancials,correctSymbol);
-          displayNewsHeadlines(stockDescription)
         }
         else {
           // otherwise, display list and use button to recursively call this function
