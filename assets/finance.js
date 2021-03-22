@@ -15,11 +15,24 @@ var storageArray = new Array();
 defaultMessages();
 init();
 
+// if user searches...
 $('#button').on('click',function() {
+    // get user input
     var userInput = $('#textbox').val();
     getStock(userInput);
+    displayNewsHeadlines(userInput + ' stock');
+    // reset certain content containers
     $('.stock-current').children().html('');
     $('.top-stocks').children().html('');
+    $('#news-card').children().html('');
+
+    // add stock to past searches
+    addSearch(userInput);
+});
+
+// clear search history
+$('#clear').on('click', function() {
+  clearPastSearches();
 });
 
 // display default content in content containers before search
@@ -27,6 +40,8 @@ function defaultMessages() {
   $('.stock-current').children().eq(0).attr('style','font-size: 16pt;');
   $('.stock-current').children().eq(0).html('Search for a stock above to see results!');
   $('.top-stocks').children().eq(0).html('Stock profile');
+
+  displaySearches();
 }
 
 function init() {
@@ -49,7 +64,6 @@ function getStock(userSearch) {
 
   // Algorithm explained. 1st get stock symbol or a list of similar stocks for the user to choose, once choice is solid
   // 2. get price quote, stock profile, news stats, and financials - then display them to page
-
   fetch(stockSymbol, {mode: 'cors'})
     .then(function (response) {
       return response.json();
@@ -209,6 +223,8 @@ function displayStockFinance(stockFinancials,userSearch) {
 }
 // retrieves currents API data and appends headlines to the page
 function displayNewsHeadlines(input) {
+  $('#news-card').html('');
+
   var url = 'https://api.currentsapi.services/v1/search?' + 'language=en&category=finance&keywords=' + input + '&apiKey=58zqUId_bFIYNSpOfAZh4cXhhgMJ1is-b48zhSmxe60fK5F5';
   fetch(url)
     .then(function (response) {
@@ -217,7 +233,7 @@ function displayNewsHeadlines(input) {
     .then(function (data) {
       console.log(data);
       for (let i = 0; i < 5; i++) {
-        var articleCard = $('<div>')
+        var articleCard = $('<div>');
         $('#news-card').append(articleCard)
         var newsTitle = $('<h2>');
         newsTitle.text(data.news[i].title);
@@ -282,6 +298,7 @@ function closestSearchResult(userSearch,data) {
         linkEl.setAttribute('style','color: white; text-decoration: none');
         linkEl.setAttribute('href','#');
         linkEl.setAttribute('data-descr',dataCompanySymbol);
+        linkEl.setAttribute('data-name',dataCompanyName);
 
         linkEl.innerHTML = data.result[i].description + ' (Symbol: ' + dataCompanySymbol + ')';
         listEl.append(linkEl);
@@ -290,6 +307,7 @@ function closestSearchResult(userSearch,data) {
         // add event listener to link so it will run getStock function when clicked
         listEl.addEventListener('click', function() {
             var stockSymbol = this.children[0].getAttribute('data-descr');
+            var stockName = this.children[0].getAttribute('data-name');
 
             // reset news results
             $('.top-stocks').children().html('');
@@ -315,15 +333,18 @@ function closestSearchResult(userSearch,data) {
 
 // formats numbers for stock profile section (market cap, outstanding shares)
 function formatProfile(number) {
+    // trillion
     if (number > 1000000) {
         number /= 1000000;
         number = new Intl.NumberFormat('en-US', {style: 'decimal', maximumFractionDigits: 2}).format(number) + ' trillion';
     }
+    // billion
     else if (number > 1000) {
       number /= 1000;
       number = new Intl.NumberFormat('en-US', {style: 'decimal', maximumFractionDigits: 2}).format(number) + ' billion';
       console.log(number);
     }
+    // mere millions
     else {
         number = new Intl.NumberFormat('en-US', {style: 'decimal', maximumFractionDigits: 2}).format(number) + ' million';
     }
@@ -352,4 +373,82 @@ function inputOK(userInput) {
   }
 
   return inputOK;
+}
+
+function addSearch(stock) {
+  // if the localstorage item is not there
+  if (!localStorage.getItem("pastSearches")) {
+      // push stock into array
+      var pastSearches = [];    
+   
+      pastSearches.push(stock);
+      // write it to local storage
+      localStorage.setItem("pastSearches",JSON.stringify(pastSearches));
+  }
+  // if the localstorage item is there
+  else {
+      // extract data from localstorage
+      var pastSearches = JSON.parse(localStorage.getItem("pastSearches"));
+      console.log(pastSearches);
+      //only add if it's not already there
+      if (!alreadySaved(stock,pastSearches)) {
+           // add new stock to list
+           pastSearches.push(stock);
+           // re-insert data into local storage
+           localStorage.setItem("pastSearches",JSON.stringify(pastSearches));
+      }
+  }
+  displaySearches();
+}
+
+// retrieves past searches, displays them to page
+function displaySearches() {
+   $('.history-list').html("");
+   $('.history-list').attr('style','align: start; height: 100%; padding-top: 5px; list-style: none;');
+
+   // only do something if local storage objects exist, otherwise do nothing (ie leave blank)
+   if (localStorage.getItem("pastSearches")) {
+       // extract data from localstorage
+       var pastSearches = JSON.parse(localStorage.getItem("pastSearches"));
+
+       for (i = 0; i < pastSearches.length; i++) {
+           // build list item, add to list
+           var listItem = document.createElement("li");
+           listItem.setAttribute("id","search"+i);
+           listItem.setAttribute("style","cursor: pointer;");
+           listItem.setAttribute("data-descr",pastSearches[i]);
+           listItem.innerHTML = pastSearches[i]; 
+           $('.history-list').append(listItem);
+
+           // handle when one link is clicked on
+           listItem.addEventListener("click", function() {
+               getStock(this.getAttribute("data-descr"));
+               displayNewsHeadlines(this.getAttribute("data-descr") + " stock");
+           });
+       }
+   }
+   // set default value
+   else {
+       $('.history-list').html("None yet!");
+   }
+}
+
+// clears search history
+function clearPastSearches() {
+   localStorage.removeItem("pastSearches");
+   location.reload();
+}
+
+// takes stock and compares it to each item in array, if present returns true
+function alreadySaved(symbol,data) {
+  var present = false;
+  symbol = symbol.toUpperCase();
+
+  for (i = 0; i < data.length; i++) {
+      if (data[i].toUpperCase() === symbol) {
+          present = true;
+      }
+  }
+
+  return present;
 }
