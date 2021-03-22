@@ -8,8 +8,12 @@
  * IF NOT then display list of suggestions or an error message asking user to search again
 **/
 
+// local storage array
+var storageArray = new Array();
+
 // display default messages in stock containers prior to search
 defaultMessages();
+init();
 
 // if user searches...
 $('#button').on('click',function() {
@@ -17,7 +21,6 @@ $('#button').on('click',function() {
     var userInput = $('#textbox').val();
     getStock(userInput);
     displayNewsHeadlines(userInput + ' stock');
-
     // reset certain content containers
     $('.stock-current').children().html('');
     $('.top-stocks').children().html('');
@@ -41,6 +44,12 @@ function defaultMessages() {
   displaySearches();
 }
 
+function init() {
+var storedSearches = JSON.parse(localStorage.getItem("storedSearch"))
+if (storedSearches !== null) {
+  storageArray = storedSearches
+}
+}
 // input can be a symbol, name, isin or cusip
 function getStock(userSearch) {
   // reset a few things
@@ -69,7 +78,15 @@ function getStock(userSearch) {
           // since the first result is correct, pull symbol from API data
           var stockPosition = sameStock(userSearch,data)[1];
           var correctSymbol = data.result[stockPosition].displaySymbol;
+          var stockDescription = data.result[stockPosition].description
+          var storageObject = {
+            name: stockDescription,
+            symbol: correctSymbol
+          }
 
+          storageArray.push(storageObject);
+          localStorage.setItem("storedSearch", JSON.stringify(storageArray))
+          console.log(storageArray);
           // set URL's for other API calls...
           var priceQuote = 'https://finnhub.io/api/v1/quote?symbol=' + correctSymbol + '&token=' + token; 
   
@@ -84,6 +101,7 @@ function getStock(userSearch) {
           displayStockQuote(priceQuote,correctSymbol);
           displayStockProfile(stockProfile,correctSymbol);
           displayStockFinance(stockFinancials,correctSymbol);
+          displayNewsHeadlines(stockDescription)
         }
         else {
           // otherwise, display list and use button to recursively call this function
@@ -203,7 +221,7 @@ function displayStockFinance(stockFinancials,userSearch) {
       $('#top-stocks-3').append(financialsList); 
     });
 }
-
+// retrieves currents API data and appends headlines to the page
 function displayNewsHeadlines(input) {
   $('#news-card').html('');
 
@@ -219,9 +237,11 @@ function displayNewsHeadlines(input) {
         $('#news-card').append(articleCard)
         var newsTitle = $('<h2>');
         newsTitle.text(data.news[i].title);
+        newsTitle.attr('class', 'news-title')
         articleCard.append(newsTitle);
         var newsAuthor = $('<h3>');
         newsAuthor.text(data.news[i].author);
+        newsAuthor.attr('class', 'news-author');
         articleCard.append(newsAuthor);
         if (data.news[i].image !== "None") {
         var newsImg = $('<img>');
@@ -231,6 +251,7 @@ function displayNewsHeadlines(input) {
         }
         var newsContent = $('<p>');
         newsContent.text(data.news[i].description);
+        newsContent.attr('class', 'news-content');
         articleCard.append(newsContent);
       }
     })
@@ -293,7 +314,7 @@ function closestSearchResult(userSearch,data) {
 
             // search for suggested stock
             getStock(stockSymbol);
-            newsAPI(stockName);
+            displayNewsHeadlines(stockSymbol);
         });
         
         numberAcceptableLinks++;

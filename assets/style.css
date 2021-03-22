@@ -74,8 +74,23 @@ main {
     opacity: .9;
 }
 
+.news-title {
+    margin: 5px;
+}
+
+.news-author {
+    margin: 5px;
+}
+
 .news-image {
     max-width: 200px;
+    margin: 5px;
+}
+
+.news-content {
+    margin: 5px;
+    padding: 5px;
+    line-height: 1.5;
 }
 
 .footer {
@@ -88,5 +103,5 @@ main {
     padding: 10px;
 }
 .scroll {
-   overflow:scroll; 
+   overflow-y:scroll; 
 }
