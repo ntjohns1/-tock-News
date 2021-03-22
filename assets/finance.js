@@ -9,27 +9,20 @@
 **/
 
 // local storage array
-var storageArray = new Array();
 
 // display default messages in stock containers prior to search
 defaultMessages();
-init();
 
 // if user searches...
 $('#button').on('click',function() {
     // get user input
     var userInput = $('#textbox').val();
     getStock(userInput);
-<<<<<<< HEAD
-=======
     displayNewsHeadlines(userInput + ' stock');
-
     // reset certain content containers
->>>>>>> 26f7cc04b332a6827e13900e6239b127b1788047
     $('.stock-current').children().html('');
     $('.top-stocks').children().html('');
     $('#news-card').children().html('');
-
     // add stock to past searches
     addSearch(userInput);
 });
@@ -48,12 +41,6 @@ function defaultMessages() {
   displaySearches();
 }
 
-function init() {
-var storedSearches = JSON.parse(localStorage.getItem("storedSearch"))
-if (storedSearches !== null) {
-  storageArray = storedSearches
-}
-}
 // input can be a symbol, name, isin or cusip
 function getStock(userSearch) {
   // reset a few things
@@ -82,15 +69,7 @@ function getStock(userSearch) {
           // since the first result is correct, pull symbol from API data
           var stockPosition = sameStock(userSearch,data)[1];
           var correctSymbol = data.result[stockPosition].displaySymbol;
-          var stockDescription = data.result[stockPosition].description
-          var storageObject = {
-            name: stockDescription,
-            symbol: correctSymbol
-          }
 
-          storageArray.push(storageObject);
-          localStorage.setItem("storedSearch", JSON.stringify(storageArray))
-          console.log(storageArray);
           // set URL's for other API calls...
           var priceQuote = 'https://finnhub.io/api/v1/quote?symbol=' + correctSymbol + '&token=' + token; 
   
@@ -105,7 +84,6 @@ function getStock(userSearch) {
           displayStockQuote(priceQuote,correctSymbol);
           displayStockProfile(stockProfile,correctSymbol);
           displayStockFinance(stockFinancials,correctSymbol);
-          displayNewsHeadlines(stockDescription)
         }
         else {
           // otherwise, display list and use button to recursively call this function
