@@ -8,6 +8,9 @@
  * IF NOT then display list of suggestions or an error message asking user to search again
 **/
 
+// local storage array
+var storageArray = new Array();
+
 // display default messages in stock containers prior to search
 defaultMessages();
 
@@ -56,6 +59,8 @@ function getStock(userSearch) {
           var stockPosition = sameStock(userSearch,data)[1];
           var correctSymbol = data.result[stockPosition].displaySymbol;
 
+          storageArray.push(correctSymbol);
+          console.log(storageArray);
           // set URL's for other API calls...
           var priceQuote = 'https://finnhub.io/api/v1/quote?symbol=' + correctSymbol + '&token=' + token; 
   
@@ -278,7 +283,7 @@ function closestSearchResult(userSearch,data) {
 
             // search for suggested stock
             getStock(stockSymbol);
-            newsAPI(stockSymbol);
+            displayNewsHeadlines(stockSymbol);
         });
         
         numberAcceptableLinks++;
