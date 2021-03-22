@@ -12,6 +12,7 @@
 
 // display default messages in stock containers prior to search
 defaultMessages();
+latestNews();
 
 // if user searches...
 $('#button').on('click',function() {
@@ -40,6 +41,40 @@ function defaultMessages() {
 
   displaySearches();
 }
+function latestNews () {
+  var newsUrl = "https://api.currentsapi.services/v1/latest-news?language=en&category=finance&keywords=stock&apiKey=58zqUId_bFIYNSpOfAZh4cXhhgMJ1is-b48zhSmxe60fK5F5"
+  fetch(newsUrl)
+  .then(function (response) {
+    return response.json();
+  })
+  .then(function (data) {
+    console.log(data);
+    $('#news-card-heading').html('Latest Headlines:');
+    for (let i = 0; i < 5; i++) {
+      var articleCard = $('<div>');
+      $('#news-card').append(articleCard)
+      var newsTitle = $('<h2>');
+      newsTitle.text(data.news[i].title);
+      newsTitle.attr('class', 'news-title')
+      articleCard.append(newsTitle);
+      var newsAuthor = $('<h3>');
+      newsAuthor.text(data.news[i].author);
+      newsAuthor.attr('class', 'news-author');
+      articleCard.append(newsAuthor);
+      if (data.news[i].image !== "None") {
+      var newsImg = $('<img>');
+      newsImg.attr('src', data.news[i].image);
+      newsImg.addClass('news-image')
+      articleCard.append(newsImg);
+      }
+      var newsContent = $('<p>');
+      newsContent.text(data.news[i].description);
+      newsContent.attr('class', 'news-content');
+      articleCard.append(newsContent);
+    }
+  })
+};
+
 
 // input can be a symbol, name, isin or cusip
 function getStock(userSearch) {
