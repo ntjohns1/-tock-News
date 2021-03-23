@@ -20,6 +20,8 @@ In the top section, the user will see current (or last close) price data, includ
 
 Please view the demonstration of the app's functionality in the screenshots below. 
 
+link to slide deck: https://docs.google.com/presentation/d/1tBemtFiU1niTex7wCpX43be8HQBd-qQcWXBWaDp_djM/edit#slide=id.p
+
 
 ![first screenshot](assets/images/screen1.png)
 ![second screenshot](assets/images/screen2.png)
